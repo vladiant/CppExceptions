@@ -3,10 +3,8 @@
 #include <source_location>
 #include <string_view>
 
-struct Info {
-};
-struct Msg {
-};
+struct Info {};
+struct Msg {};
 
 struct ExceptionOrderNotFound : std::runtime_error {
   using std::runtime_error::runtime_error;
@@ -22,40 +20,36 @@ struct ExceptionInvalidClientId : std::runtime_error {
 };
 
 bool send(const Msg& request) {
-  (void) request;
+  (void)request;
   return true;
 }
 
 Msg apply(const Info& data) {
-  (void) data;
+  (void)data;
   throw ExceptionOrderNotFound{"illegal format"};
   return Msg{};
 }
 
 bool process(const Info& data) {
-    try {
-      Msg request = apply(data);
-      return send(request);
-    }
-    catch(ExceptionOrderNotFound& e) {
-      return send(e.msg_);
-    }
-    catch(ExceptionIllegalCurrency& e) {
-      return send(e.msg_);
-    }
-    catch(ExceptionInvalidClientId& e) {
-      return send(e.msg_);
-    }
-    return true;
+  try {
+    Msg request = apply(data);
+    return send(request);
+  } catch (ExceptionOrderNotFound& e) {
+    return send(e.msg_);
+  } catch (ExceptionIllegalCurrency& e) {
+    return send(e.msg_);
+  } catch (ExceptionInvalidClientId& e) {
+    return send(e.msg_);
+  }
+  return true;
 }
 
 int main() {
-    try {
-      process(Info{});
-    }
-    catch(...) {
-        std::cout << "Unknown exception" << std::endl;
-    }
-    std::cout << "End" << std::endl;
-    return 0;
+  try {
+    process(Info{});
+  } catch (...) {
+    std::cout << "Unknown exception" << std::endl;
+  }
+  std::cout << "End" << std::endl;
+  return 0;
 }
